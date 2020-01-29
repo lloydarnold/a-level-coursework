@@ -1,8 +1,10 @@
 import pygame
 import sys
 import time
+import pathlib
 import threading
 import os
+import re
 import neural_network as nn
 from pygame.locals import *
 
@@ -22,7 +24,7 @@ BAT1DOWN = USEREVENT + 2
 BAT2UP = USEREVENT + 3
 BAT2DOWN = USEREVENT + 4
 
-PROJECT_NAME = "pong"
+PROJECT_NAME = "pong_GD"
 
 
 class Item:
@@ -224,7 +226,7 @@ pygame.event.Event(0o0001, message = "no event passed")), stop=None):
             break
 
 
-def save_record_data(data_to_save, epoch):
+def save_record_data(data_to_save=None, epoch=0):
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
     pathlib.Path(dataPath).mkdir(parents=True, exist_ok=True)
 
@@ -239,9 +241,31 @@ def save_record_data(data_to_save, epoch):
         return
 
     for item in data_to_save:
-        fLayers.write("%s, %f, %f" % (str(item[0]), item[1], item[2]))
+        fLayers.write("%s, %f, %f \n" % (str(item[0]), item[1], item[2]))
 
     return
+
+
+def read_record_data(epoch=0):
+    dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
+
+    try:
+        fData = open(dataPath + "data.txt", "r")
+    except FileNotFoundError:
+        print("error, file at path %s not found" % str(dataPath))
+        return 0,0,0
+
+    inputs = list()
+    outputs = list()
+    expected = list()
+
+    for line in fData:
+        temp = re.split(",", line)
+        inputs.append(temp[0])
+        outputs.append(temp[1])
+        expected.append(temp[2])
+
+    return inputs, outputs, expected
 
 
 def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Ball(),
@@ -273,11 +297,8 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
         time.sleep(0.1)
         arrIn = [inputArray()]
         network.run_first_layer(arrIn)
-        for x in range(0, len(network.layers)-1):
+        for x in range(1, len(network.layers)):
             network.feed_forward(x)
-        #network.feed_forward(1)
-        #network.feed_forward(2)
-        #network.feed_forward(3)
         val = network.rtn_rating()
 
         # set to use hyperbolic tangent function. could use any other logistic sigmoidal
@@ -334,7 +355,7 @@ def run_game(canvas, netToTest, epoch):
     neural_net_thread.start()               # Thread.run() moves main thread, Thread.start() initiates new
 
     bounces = 0
-    play_count = 500
+    play_count = 10000
 
     while play_count > 0:
         time.sleep(0.01)
@@ -388,6 +409,10 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
         start = time.time()
 
         run_game(screen, network, h)
+
+        inputs, outputs, expected = read_record_data(h)
+        # nn.backwards(expected)
+        # nn.update_weights_backprop(inputs, 0.01)
 
         end = time.time()
 
@@ -445,7 +470,7 @@ def main():
     numOfEpochs = get_value("How many epochs? ")
 
     if ask_load():
-        networks, startEpoch = load()
+        net, startEpoch = load()
     else:
         net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
         startEpoch = 0
@@ -456,4 +481,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    inputs, outputs, expected = read_record_data(0)
+    doSomething = 8
+

@@ -112,8 +112,10 @@ class NeuralNet:
 
         inputs = []
         for source in self.layers[layerRef - 1]:
-            try :
+            try:
                 inputs.append(source.output[0][0])
+            except TypeError:
+                print("Type Error thrown in feed_forward")
             except IndexError:
                 inputs.append(source.output[0])
         inputArr = np.array(inputs)
