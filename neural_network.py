@@ -243,7 +243,11 @@ class NeuralNet:
             if index != 0:
                 inputs = [neuron.output for neuron in self.layers[index-1]]
             for neuron in layer:
-                for i in range(len(inputs)):
+                for i in range(len(neuron.synaptic_weights)):
+                    print(i)
+                    print(neuron.change)
+                    print(inputs[i])
+                    print(neuron.synaptic_weights)
                     neuron.synaptic_weights[i] += l_rate * neuron.change * inputs[i]
 
 ########################################################################################################################

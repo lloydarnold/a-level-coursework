@@ -278,8 +278,23 @@ pygame.event.Event(0o0001, message = "no event passed")), stop=None):
 # end of pong functionality code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def string_to_list(inputString):
-    return
+def string_to_list(inputString = "", CInt=False):
+    """ takes in string of list-like form and returns a list. Used when reading data from record file.
+    :param inputString: String to be converted to list
+    :param CInt: Boolean, if true values in string will be returned as Integers"""
+    holdList = list()
+    holdStr = ""
+    for char in inputString:
+        if char == ",":
+            if CInt:
+                holdList.append(int(holdStr))
+            else:
+                holdList.append(holdStr)
+            holdStr = ""
+        else:
+            holdStr += char
+
+    return holdList
 
 
 def read_record_data(epoch):
@@ -299,7 +314,7 @@ def read_record_data(epoch):
         temp = re.split("~", nn.strip_brackets_and_whitespace(line))
         # print(temp)
         # print(type(temp))
-        inputs.append(temp[0])
+        inputs.append(string_to_list(temp[0]+",", True))
         outputs.append(float(temp[1]))
         expected.append(float(temp[2]))
 
@@ -445,11 +460,11 @@ def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=(
         print(inputArr)
         print(type(inputArr))
         # print(index)
-        netUpdate.run_first_layer(inputArr)
+        netUpdate.run_first_layer([inputArr])
         for x in range(1, len(netUpdate.layers)):
             netUpdate.feed_forward(x)
         netUpdate.backwards(expectedVals[index])
-        netUpdate.update_weights_backprop(inputVals, 0.01)
+        netUpdate.update_weights_backprop(inputArr, 0.01)
 
     return
 
@@ -540,5 +555,5 @@ def test_update():
 
 
 if __name__ == "__main__":
-    #main()
+    # main()
     test_update()
