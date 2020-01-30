@@ -253,8 +253,6 @@ def init_game_objects(canvas=None):
 
     return initGameBall, initBat1, initBat2
 
-# end of pong functionality code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 def comp_move(bat=Bat(), ball=Ball(), control_set=(pygame.event.Event(0o0001, message = "no event passed"),
 pygame.event.Event(0o0001, message = "no event passed")), stop=None):
@@ -277,6 +275,12 @@ pygame.event.Event(0o0001, message = "no event passed")), stop=None):
         if stop():
             break
 
+# end of pong functionality code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+def string_to_list(inputString):
+    return
+
 
 def read_record_data(epoch):
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
@@ -292,10 +296,12 @@ def read_record_data(epoch):
     expected = list()
 
     for line in fData:
-        temp = re.split(",", line)
-        inputs = temp[0]
-        outputs = temp[1]
-        expected = temp[2]
+        temp = re.split("~", nn.strip_brackets_and_whitespace(line))
+        # print(temp)
+        # print(type(temp))
+        inputs.append(temp[0])
+        outputs.append(float(temp[1]))
+        expected.append(float(temp[2]))
 
     return inputs, outputs, expected
 
@@ -322,7 +328,7 @@ def save_record_data(data_to_save, epoch):
         return
 
     for item in data_to_save:
-        fLayers.write("%s, %f, %f \n" % (str(item[0]), item[1], item[2]))
+        fLayers.write("%s~%f~%f \n" % (str(item[0]), item[1], item[2]))
 
     return
 
@@ -376,7 +382,7 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
             move = -1
         else:
             move = 0
-        gameRecord.append((arrIn, val, move))
+        gameRecord.append((arrIn[0], val, move))
 
         if stop():
             save_record_data(gameRecord, epoch)
@@ -436,6 +442,9 @@ def run_game(canvas=None, netToTest=nn.NeuralNet(), epoch=0):
 
 def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=()):
     for index, inputArr in enumerate(inputVals):
+        print(inputArr)
+        print(type(inputArr))
+        # print(index)
         netUpdate.run_first_layer(inputArr)
         for x in range(1, len(netUpdate.layers)):
             netUpdate.feed_forward(x)
@@ -531,5 +540,5 @@ def test_update():
 
 
 if __name__ == "__main__":
-    # main()
+    #main()
     test_update()
