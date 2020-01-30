@@ -1,10 +1,9 @@
 import pygame
 import sys
 import time
-import pathlib
+import re
 import threading
 import os
-import re
 import neural_network as nn
 from pygame.locals import *
 
@@ -31,7 +30,7 @@ class Item:
     """
     Defines general item class, for any item that user can interact with
     """
-    def __init__(self, xCoord=0, yCoord=0, dimensions=(20, 20), delta_x=0, delta_y=0, colour=WHITE, canvas=""):
+    def __init__(self, xCoord=0, yCoord=0, dimensions=(20, 20), delta_x=0, delta_y=0, colour=WHITE, canvas=None):
         """
         __init__ magic method; class constructor
         :param xCoord: initial x co-ordinate of item
@@ -201,6 +200,59 @@ def game_over(ball):
     else:
         return False
 
+
+def move_correct_bat(gameEvent=None, batA=None, batB=None):
+    if not gameEvent:
+        print("no gameEvent passed")
+        return
+
+    if not batA and batB:
+       print("Bats not passed")
+       return
+
+    if gameEvent.type == BAT1UP:
+        batA.up()
+    if gameEvent.type == BAT1DOWN:
+        batA.down()
+    if gameEvent.type == BAT2UP:
+        batB.up()
+    if gameEvent.type == BAT2DOWN:
+        batB.down()
+
+
+def bounces(ball=None, batA=None, batB=None):
+    if not ball and batA and batB:
+        print("Bounces sub called without correct params")
+        return
+
+    bounceOnBat = check_bounce(ball)
+    if bounceOnBat == 1:
+        check_bounce_bat(ball, batA)
+    if bounceOnBat == 2:
+        check_bounce_bat(ball, batB)
+
+    # this code stops game from ending when (when, not if) neural net controlled bat
+    # misses the ball. Number of misses is not logged.
+    if ball.x < 10:
+        ball.bounce(True, False)
+        ball.x += 5
+
+
+def init_game_objects(canvas=None):
+    if not canvas:
+        print("must pass canvas into init_game_objects")
+        return
+
+    initGameBall = Ball(50, 50, BALL_SIZE, 5, 5, WHITE, canvas)
+    initBat1 = Bat(10, 180, BAT_SIZE, 0, 20, WHITE, canvas)
+    initBat2 = Bat(SCREEN_WIDTH - 15, 180, BAT_SIZE, 0, 20, WHITE, canvas)
+
+    initGameBall.draw()
+    initBat1.draw()
+    initBat2.draw()
+
+    return initGameBall, initBat1, initBat2
+
 # end of pong functionality code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -226,9 +278,38 @@ pygame.event.Event(0o0001, message = "no event passed")), stop=None):
             break
 
 
-def save_record_data(data_to_save=None, epoch=0):
+def read_record_data(epoch):
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
-    pathlib.Path(dataPath).mkdir(parents=True, exist_ok=True)
+
+    try:
+        fData = open(dataPath + "/data.txt", "r")
+    except OSError:
+        print("error. directory %s does not exist or cannot be accessed" % dataPath)
+        return
+
+    inputs = list()
+    outputs = list()
+    expected = list()
+
+    for line in fData:
+        temp = re.split(",", line)
+        inputs = temp[0]
+        outputs = temp[1]
+        expected = temp[2]
+
+    return inputs, outputs, expected
+
+
+def save_record_data(data_to_save, epoch):
+    dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
+
+    try:
+        os.makedirs(dataPath)
+    except FileExistsError:
+        print("Error, file to be made already exists.")
+        override = get_value("Override? (Y/N)")
+        if override.upper() == "N":
+            return
 
     if not data_to_save:
         print("no data passed into save data function")
@@ -244,28 +325,6 @@ def save_record_data(data_to_save=None, epoch=0):
         fLayers.write("%s, %f, %f \n" % (str(item[0]), item[1], item[2]))
 
     return
-
-
-def read_record_data(epoch=0):
-    dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
-
-    try:
-        fData = open(dataPath + "data.txt", "r")
-    except FileNotFoundError:
-        print("error, file at path %s not found" % str(dataPath))
-        return 0,0,0
-
-    inputs = list()
-    outputs = list()
-    expected = list()
-
-    for line in fData:
-        temp = re.split(",", line)
-        inputs.append(temp[0])
-        outputs.append(temp[1])
-        expected.append(temp[2])
-
-    return inputs, outputs, expected
 
 
 def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Ball(),
@@ -324,20 +383,14 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
             break
 
 
-def run_game(canvas, netToTest, epoch):
+def run_game(canvas=None, netToTest=nn.NeuralNet(), epoch=0):
     """ subroutine for game play
     :param canvas : pygame surface on which gameplay occurs
     :param netToTest : instance of network class, fitness of which is being evaluated
     :param epoch: epoch number
     """
     # initialise game objects
-    gameBall = Ball(50, 50, BALL_SIZE, 5, 5, WHITE, canvas)
-    bat1 = Bat(10, 180, BAT_SIZE, 0, 20, WHITE, canvas)
-    bat2 = Bat(SCREEN_WIDTH - 15, 180, BAT_SIZE, 0, 20, WHITE, canvas)
-
-    bat1.draw()
-    bat2.draw()
-    gameBall.draw()
+    gameBall, bat1, bat2 = init_game_objects(canvas)
 
     # initialise variables for new thread calls
     stop_threads = False
@@ -354,8 +407,7 @@ def run_game(canvas, netToTest, epoch):
     comp_control_thread.start()             # N.B. Thread.start() instead of Thread.run()
     neural_net_thread.start()               # Thread.run() moves main thread, Thread.start() initiates new
 
-    bounces = 0
-    play_count = 10000
+    play_count = 3000
 
     while play_count > 0:
         time.sleep(0.01)
@@ -368,35 +420,29 @@ def run_game(canvas, netToTest, epoch):
                 stop_threads = True
                 end_game((gameBall, bat1, bat2, netToTest))
             else:
-                if event.type == BAT1UP:
-                    bat1.up()
-                if event.type == BAT1DOWN:
-                    bat1.down()
-                if event.type == BAT2UP:
-                    bat2.up()
-                if event.type == BAT2DOWN:
-                    bat2.down()
+                move_correct_bat(event, bat1, bat2)
 
         input_nn = [gameBall.x, gameBall.y, bat1.x, bat1.y, gameBall.movement[0], gameBall.movement[1]]
-        gameBall.move()  # calls move method on ball
+        gameBall.move()
 
-        bounceOnBat = check_bounce(gameBall)
-        if bounceOnBat == 1:
-            check_bounce_bat(gameBall, bat1)
-        if bounceOnBat == 2:
-            check_bounce_bat(gameBall, bat2)
-
-        # this code stops game from ending when (when, not if) neural net controlled bat
-        # misses the ball. Number of misses is not logged.
-        if gameBall.x < 10:
-            gameBall.bounce(True, False)
-            gameBall.x += 5
+        bounces(gameBall, bat1, bat2)
 
     stop_threads = True
+    draw_background(canvas)
     del gameBall
     del bat1
     del bat2
-    return bounces
+
+
+def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=()):
+    for index, inputArr in enumerate(inputVals):
+        netUpdate.run_first_layer(inputArr)
+        for x in range(1, len(netUpdate.layers)):
+            netUpdate.feed_forward(x)
+        netUpdate.backwards(expectedVals[index])
+        netUpdate.update_weights_backprop(inputVals, 0.01)
+
+    return
 
 
 def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
@@ -404,19 +450,17 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
 
     screen = init_screen()
 
-    for h in range(0, epochs):
+    for h in range(1, epochs + 1):
 
         start = time.time()
 
         run_game(screen, network, h)
 
-        inputs, outputs, expected = read_record_data(h)
-        # nn.backwards(expected)
-        # nn.update_weights_backprop(inputs, 0.01)
+        inputArr, outputArr, expectedArr = read_record_data(h)
 
         end = time.time()
 
-        print("epoch %s complete in %d seconds" % (h, end - start))
+        print("epoch %s complete in %d seconds" % (startEpoch + h, end - start))
     return network
 
 
@@ -473,15 +517,19 @@ def main():
         net, startEpoch = load()
     else:
         net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
-        startEpoch = 0
+        startEpoch = 0.0
 
     train(net, int(numOfEpochs), int(startEpoch))
 
-    print("and that's the game folks")
+    print("process over")
+
+
+def test_update():
+    net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
+    inputArr, outputArr, expectedArr = read_record_data(1)
+    update_net_weightings(net, inputArr, expectedArr)
 
 
 if __name__ == "__main__":
-    #main()
-    inputs, outputs, expected = read_record_data(0)
-    doSomething = 8
-
+    # main()
+    test_update()

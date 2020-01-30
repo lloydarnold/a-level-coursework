@@ -9,6 +9,7 @@
       <w>pygame</w>
       <w>reversi</w>
       <w>tanh</w>
+      <w>vals</w>
     </words>
   </dictionary>
 </component>
