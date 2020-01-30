@@ -273,11 +273,8 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
         time.sleep(0.1)
         arrIn = [inputArray()]
         network.run_first_layer(arrIn)
-        for x in range(0, len(network.layers)-1):
+        for x in range(1, len(network.layers)):
             network.feed_forward(x)
-        #network.feed_forward(1)
-        #network.feed_forward(2)
-        #network.feed_forward(3)
         val = network.rtn_rating()
 
         # set to use hyperbolic tangent function. could use any other logistic sigmoidal
