@@ -23,7 +23,7 @@ BAT1DOWN = USEREVENT + 2
 BAT2UP = USEREVENT + 3
 BAT2DOWN = USEREVENT + 4
 
-PROJECT_NAME = "pong_GD"
+PROJECT_NAME = "pong_GD2"
 
 
 class Item:
@@ -457,9 +457,7 @@ def run_game(canvas=None, netToTest=nn.NeuralNet(), epoch=0):
 
 def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=()):
     for index, inputArr in enumerate(inputVals):
-        print(inputArr)
-        print(type(inputArr))
-        # print(index)
+
         netUpdate.run_first_layer([inputArr])
         for x in range(1, len(netUpdate.layers)):
             netUpdate.feed_forward(x)
@@ -481,6 +479,17 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
         run_game(screen, network, h)
 
         inputArr, outputArr, expectedArr = read_record_data(h)
+
+        for x in range(0, 50):
+            update_net_weightings(network, inputArr, expectedArr)
+
+        screen.fill = BLACK
+        draw_background(screen)
+
+        network.make_net_dir()
+        network.save_network()
+
+        network.generation += 1
 
         end = time.time()
 
@@ -518,7 +527,8 @@ def load():
         try:
             directories = [f.path for f in os.scandir(path) if f.is_dir()]
         except FileNotFoundError:
-            print("error, file path specified does not exist. epoch number entered was %d" %genReached)
+            print("error, file path specified does not exist. epoch number entered was %s" %genReached)
+            print("file path was %s " % path)
             return
         netsFound = []
 
@@ -532,8 +542,6 @@ def load():
 
 
 def main():
-    canvas = init_screen()
-    # play_game(canvas)
 
     numOfEpochs = get_value("How many epochs? ")
 
@@ -555,5 +563,5 @@ def test_update():
 
 
 if __name__ == "__main__":
-    # main()
-    test_update()
+    main()
+    # test_update()

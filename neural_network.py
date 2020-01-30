@@ -74,9 +74,9 @@ class NeuralNet:
                 numOfInputs = firstLayerInput
             else:
                 numOfInputs = layerSizes[n - 1]
-            self.init_layer(self.layers[n], [weightsKnown, n], numOfInputs)
+            self.init_layer(self.layers[n], [weightsKnown, n], numOfInputs, ("layer_%g" %n))
 
-    def init_layer(self, layer, loadParams, numOfInputs):  # numOfInputs is num PER NEURON not total for layer
+    def init_layer(self, layer, loadParams, numOfInputs, layerName):  # numOfInputs is num PER NEURON not total for layer
         """ Code to initialise a layer with n neurons, where n is the number of neurons in the layer"""
         weights = list()
         # print(layer)
@@ -87,13 +87,13 @@ class NeuralNet:
 
         for i in range(0, len(layer)):
             try:
-                layer[i] = Neuron(numOfInputs, weights[i])
+                layer[i] = Neuron(numOfInputs, weights[i], layerName)
             except IndexError:
-                print("INDEX ERROR LAYER %d, sub init_layer" %i)
+                print("INDEX ERROR LAYER %s, sub init_layer" % layerName)
             except TypeError:
-                print("TYPE ERROR LAYER %d, sub init_layer" %i)
+                print("TYPE ERROR LAYER %s, sub init_layer" % layerName)
             except:
-                print("unknown error thrown layer %d, sub init_layer" %i)
+                print("unknown error thrown layer %s, sub init_layer" % layerName)
 
     def run_first_layer(self, board):
         """the first layer takes inputs in a different way to the other layers and thus requires a separate subroutine
@@ -220,7 +220,7 @@ class NeuralNet:
     def backwards(self, expected):
         numOfLayers = len(self.layers) - 1
         lastLayer = True
-        for i in reversed(range(numOfLayers, 0)):
+        for i in range(numOfLayers, 0, -1):
             layer = self.layers[i]      # N.B. In python, assignment operator assigns new label to same memory ref.
             errors = list()
             if lastLayer:
@@ -238,17 +238,24 @@ class NeuralNet:
 
         return
 
+    def backprop_layer_one(self, inputs, l_rate):
+        """ This is necessary as in standard network topology, each neuron in L1 only receives one input"""
+        for index, neuron in enumerate(self.layers[0]):
+            neuron.synaptic_weights[0] += l_rate * neuron.change * inputs[index]
+
     def update_weights_backprop(self, inputs, l_rate):
         for index, layer in enumerate(self.layers):
             if index != 0:
                 inputs = [neuron.output for neuron in self.layers[index-1]]
-            for neuron in layer:
-                for i in range(len(neuron.synaptic_weights)):
-                    print(i)
-                    print(neuron.change)
-                    print(inputs[i])
-                    print(neuron.synaptic_weights)
-                    neuron.synaptic_weights[i] += l_rate * neuron.change * inputs[i]
+                for neuron in layer:
+                    for i in range(len(neuron.synaptic_weights)):
+                        # print(i)
+                        # print(neuron.change)
+                        # print(inputs[i])
+                        # print(neuron.synaptic_weights)
+                        neuron.synaptic_weights[i][0] += l_rate * neuron.change * inputs[i]
+            else:
+                self.backprop_layer_one(inputs, l_rate)
 
 ########################################################################################################################
 
