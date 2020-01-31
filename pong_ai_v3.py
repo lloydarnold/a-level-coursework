@@ -4,6 +4,7 @@ import time
 import re
 import threading
 import os
+import random
 import neural_network as nn
 from pygame.locals import *
 
@@ -23,7 +24,7 @@ BAT1DOWN = USEREVENT + 2
 BAT2UP = USEREVENT + 3
 BAT2DOWN = USEREVENT + 4
 
-PROJECT_NAME = "pong_GD2"
+PROJECT_NAME = "pong_GD3"
 
 
 class Item:
@@ -88,6 +89,7 @@ class Ball(Item):
             return "must set exactly 1 of changeX, changeY to True"
 
         self.movement[direction] *= -1
+        self.movement[1] += random.randint(-4,4)
         # self.movement[direction] += random.randint(-8, 8)
 
         if changeY:
@@ -125,7 +127,7 @@ class Bat(Item):
 
         yIntercept = ball.y + cycles * ball.movement[1]
 
-        if yIntercept < self.y - 5:
+        if yIntercept < self.y - 10:
             # print("elevator, goin up")
             # print(str(yIntercept) + "  " + str(self.y))
             return "up"
@@ -235,6 +237,7 @@ def bounces(ball=None, batA=None, batB=None):
     # misses the ball. Number of misses is not logged.
     if ball.x < 10:
         ball.bounce(True, False)
+        ball.wipe(ball.x, ball.y)
         ball.x += 5
 
 
@@ -326,24 +329,29 @@ def save_record_data(data_to_save, epoch):
 
     try:
         os.makedirs(dataPath)
-    except FileExistsError:
+    except OSError:
         print("Error, file to be made already exists.")
         override = get_value("Override? (Y/N)")
         if override.upper() == "N":
+            print("File Preserved")
             return
+        else:
+            print("File Overriden")
 
     if not data_to_save:
         print("no data passed into save data function")
         return
 
     try:
-        fLayers = open(dataPath + "/data.txt", "w")
+        fData = open(dataPath + "/data.txt", "w")
     except FileNotFoundError:
         print("error, file at path %s not found" % str(dataPath))
         return
 
     for item in data_to_save:
-        fLayers.write("%s~%f~%f \n" % (str(item[0]), item[1], item[2]))
+        fData.write("%s~%f~%f \n" % (str(item[0]), item[1], item[2]))
+
+    fData.close()
 
     return
 
@@ -428,7 +436,7 @@ def run_game(canvas=None, netToTest=nn.NeuralNet(), epoch=0):
     comp_control_thread.start()             # N.B. Thread.start() instead of Thread.run()
     neural_net_thread.start()               # Thread.run() moves main thread, Thread.start() initiates new
 
-    play_count = 3000
+    play_count = 300
 
     while play_count > 0:
         time.sleep(0.01)
@@ -483,8 +491,7 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
         for x in range(0, 50):
             update_net_weightings(network, inputArr, expectedArr)
 
-        screen.fill = BLACK
-        draw_background(screen)
+        reset_screen(screen)
 
         network.make_net_dir()
         network.save_network()
