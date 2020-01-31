@@ -343,7 +343,7 @@ def save_record_data(data_to_save, epoch):
         return
 
     try:
-        fData = open(dataPath + "/data.txt", "w")
+        fData  = open(dataPath + "/data.txt", "w")
     except FileNotFoundError:
         print("error, file at path %s not found" % str(dataPath))
         return
@@ -352,6 +352,7 @@ def save_record_data(data_to_save, epoch):
         fData.write("%s~%f~%f \n" % (str(item[0]), item[1], item[2]))
 
     fData.close()
+    print("File successfully made at path %s" % dataPath)
 
     return
 
@@ -486,6 +487,8 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
 
         run_game(screen, network, h)
 
+        time.sleep(0.1)   # wait important to ensure that file is not read before it has been
+                    # in another thread.
         inputArr, outputArr, expectedArr = read_record_data(h)
 
         for x in range(0, 50):

@@ -1,5 +1,4 @@
 import numpy as np
-import pathlib
 import os
 import time
 import copy
@@ -215,8 +214,11 @@ class NeuralNet:
         Takes path of file to save relative to, name of project, generation reference string, """
 
         self.path = os.path.join(os.getcwd(), self.projectName, "gen_" + str(self.generation), self.name)
-        pathlib.Path(self.path).mkdir(parents=True, exist_ok=True)
-
+        try:
+            os.makedirs(self.path)
+        except OSError:
+            print("Error, file already exists at path %s " %self.path)
+            
     def backwards(self, expected):
         numOfLayers = len(self.layers) - 1
         lastLayer = True
