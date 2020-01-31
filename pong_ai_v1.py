@@ -4,7 +4,6 @@ import sys
 import time
 import threading
 import numpy as np
-import pygame.surfarray as surfarray
 import neural_network as nn
 from pygame.locals import *
 
