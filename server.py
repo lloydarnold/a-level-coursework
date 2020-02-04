@@ -56,10 +56,13 @@ def handler_v2(conn, addr):
 
    requestType = send_and_receive("connection approved; request type? \n", conn)
 
+   if not requestType:
+       return
+
    if re.match("^POST.*", requestType):
        recv_data(conn)
    elif re.match("^GET.*", requestType):
-       get_handler(re.split("-", requestType)[-1], conn)       # passes on the section of the request after GET_
+       get_handler(re.split("_", requestType)[-1], conn)       # passes on the section of the request after GET_
    else:
        send_and_print("1 - illegal connection type", conn)
        conn.close()
@@ -137,6 +140,9 @@ def send_sys_data(conn):
    :return: 1 if executes successfully
    """
    sys_id = send_and_receive("sys_id?\n")
+   if not sys_id:
+       send_and_print("invalid sys_id entered", conn)
+       conn.close()
    sys_index = get_index(sys_id)
    sys_data_raw = systems[sys_index]
 
@@ -155,7 +161,7 @@ def send_and_receive(message="", comSocket=socket.socket(socket.AF_INET, socket.
        data = comSocket.recv(2048)
    except socket.timeout:
        comSocket.send("Station took too long to reply \n".encode())
-       data = -1
+       return None
    return data.decode()
 
 
@@ -188,11 +194,16 @@ def recv_data(conn):
    :return: 1 if executes successfully
    """
 
-   json_data = get_json(conn)
-   new_data = json.loads(json_data)
+   json_data = get_json("send JSON of sys_data", conn)
+   try:
+       new_data = json.loads(json_data)
+   except ValueError:
+       send_and_print("file sent not a JSON", conn)
+       send_and_print("connection terminated", conn)
+       conn.close()
 
    update_records(new_data)
-   return 1
+   return
 
 
 def get_index(sys_id):
@@ -210,8 +221,9 @@ def get_index(sys_id):
 
 def update_records(data):
    index = get_index(data["sys_id"])
+   systems[index] = data
 
-   return 0
+   return
 
 
 if __name__ == "__main__":

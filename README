@@ -31,6 +31,7 @@ pong_ai_v2.py:
 
     dependencies: sys, pygame, time, threading, os, neural_network
 
+
 pong_ai_v3.py:
     code for developing neural network (as defined in neural_network.py) to play pong, using gradient descent.
     pong more sophisticated than other implementations in minor way as bouncing now random (along y axis)
