@@ -93,14 +93,14 @@ class NeuralNet:
             except:
                 print("unknown error thrown layer %s, sub init_layer" % layerName)
 
-    def run_first_layer(self, board):
+    def run_first_layer(self, inputs):
         """the first layer takes inputs in a different way to the other layers and thus requires a separate subroutine
         takes board as input. players squares should be represented as a one """
 
         count = 0
-        for row in board:
-            for square in row:
-                self.layers[0][count].think(square)     # done goofed here
+        for entry in inputs:
+            for value in entry:
+                self.layers[0][count].think(value)     # done goofed here
                 count += 1                              # when reading weights in from file, missing last ??
 
     def feed_forward(self, layerRef=1):
@@ -332,6 +332,7 @@ def save_meta_data(data_to_save=(("no data passed", 0)), networks=()):
     :param data_to_save: Tuple of tuples, each containing parameter name / parameter
                          eg. ("max fitness", 100)
     :param networks: list or list-like object of instances of network class"""
+
     try:
         metaPath = networks[0].path.replace(networks[0].name, "meta.txt")
     except IndexError:
