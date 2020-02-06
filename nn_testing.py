@@ -74,6 +74,17 @@ def test_net_run():
     del net
 
 
+def test_net_save():
+    print("Testing save network ")
+    net = nn.NeuralNet([5, 5, 1], 1, False, "test_name", 1, "test_project")
+    print("network: " + str(net))
+    print("net.path : " + net.path)
+    net.make_net_dir()
+    net.save_network()
+    print("\n")
+    del net
+
+
 if __name__ == "__main__":
     test_neuron_init()
     test_neuron_mutate()
@@ -81,3 +92,4 @@ if __name__ == "__main__":
     test_neuron_loss()
     test_net_init()
     test_net_run()
+    test_net_save()
