@@ -1,5 +1,6 @@
 If it ain't broke, don't fix it.
 
+
 reversi_ai_v1/v2.py:
     Code for training neural networks to play game Reversi. Has lots of neat features.
     Bells and Whistles included as stock.
@@ -38,10 +39,12 @@ pong_ai_v3.py:
 
     dependencies: sys, pygame, time, threading, os, random, re, neural_network
 
+
 old_neural_network.py:
     implementation of moderate level neural network. Designed to be importable
 
     structured in different manner to neural_network, and is less efficient
+
 
 neural_network.py:
     implementation of moderate level neural network. Designed to be importable.

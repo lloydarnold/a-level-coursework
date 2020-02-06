@@ -88,9 +88,9 @@ def handler(conn):
        recv_data(conn)
    elif requestType == "GET":
        GETtype = send_and_receive("GET_type?\n", conn)
-       if GETtype == "sys_ids":
+       if GETtype == "sysids":
            send_sys_ids(conn)
-       elif GETtype == "sys_data":
+       elif GETtype == "sysdata":
            send_sys_data(conn)
    else:
        conn.send("illegal connection type\n".encode())
@@ -99,13 +99,20 @@ def handler(conn):
    return 0
 
 
-def get_handler(type, conn):
+def get_handler(type="test", conn=None):
    """
    :param type: the type of get request. Split off of initial request using REGEX
    :param conn: same as before; socket
    :return: 1 if execute successfully
    """
-   if type == "sys_id":
+
+   if not conn:
+       return
+
+   send_and_print("1" + type + "\n", conn)
+   print("2" + type + "\n")
+
+   if type == "sysid":
        send_sys_ids(conn)
    if type == "data":
        send_sys_data(conn)
