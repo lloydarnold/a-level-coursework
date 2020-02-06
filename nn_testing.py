@@ -34,6 +34,22 @@ def test_neuron_think():
     del neuron
 
 
+def test_neuron_loss():
+    print("testing neuron loss ")
+    neuron = nn.Neuron(2, [-999] * 2)
+    print("neuron: " + str(neuron))
+    inputs = [1, -1]
+    expected = -1
+    neuron.think(inputs)
+    neuron.calc_loss(expected)
+    print("inputs = %s " % str(inputs))
+    print("output = %g " % neuron.output)
+    print("expected = %s " % expected)
+    print("loss = %g " % neuron.loss)
+    print("\n")
+    del neuron
+
+
 def test_net_init():
     print("Testing network initialisation ")
     net = nn.NeuralNet([64, 42, 1], 1, False, "test_name", 1, "test_project")
@@ -48,4 +64,5 @@ if __name__ == "__main__":
     test_neuron_init()
     test_neuron_mutate()
     test_neuron_think()
+    test_neuron_loss()
     test_net_init()
