@@ -218,7 +218,7 @@ class NeuralNet:
             os.makedirs(self.path)
         except OSError:
             print("Error, file already exists at path %s " %self.path)
-            
+
     def backwards(self, expected):
         numOfLayers = len(self.layers) - 1
         lastLayer = True
@@ -374,5 +374,4 @@ def eliminate_bottom_networks(networks):
 
 if __name__ == "__main__":
     # net = neural_net([64, 42, 1], False, "1564341349747", 2, "opti_reversi")
-    # test = "test"
     pass
