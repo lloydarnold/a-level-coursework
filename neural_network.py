@@ -26,7 +26,6 @@ class Neuron:
 
     def think(self, neuron_input):
         self.output = self.activation(np.dot(neuron_input, self.synaptic_weights))
-        # if self.output[0].type
 
     def calc_loss(self, expected):
         self.loss = self.loss_func(self.output, expected)
