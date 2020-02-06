@@ -28,7 +28,7 @@ class Neuron:
         self.output = self.activation(np.dot(neuron_input, self.synaptic_weights))
         # if self.output[0].type
 
-    def loss(self, expected):
+    def calc_loss(self, expected):
         self.loss = self.loss_func(self.output, expected)
 
 
@@ -227,7 +227,8 @@ class NeuralNet:
             errors = list()
             if lastLayer:
                 for neuron in layer:
-                    neuron.change = (expected - neuron.output) * tanh_derivative(neuron.output)
+                    neuron.calc_loss(expected)
+                    neuron.change = neuron.loss * tanh_derivative(neuron.output)
                 lastLayer = False
             else:
                 for j in range(len(layer)):
