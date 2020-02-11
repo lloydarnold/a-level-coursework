@@ -30,7 +30,9 @@ def test_neuron_think():
     inputs = [1, -1]
     print("inputs = %s " % str(inputs))
     neuron.think(inputs)
-    print("output = %g " % neuron.output)
+    print("output trial 1 = %g " % neuron.output)
+    neuron.think(inputs)
+    print("output trial 2 = %g " % neuron.output)
     print("\n")
     del neuron
 
@@ -103,6 +105,14 @@ def test_net_read_network():
     del net
 
 
+def test_save_metadata():
+    print("Testing save metadata")
+    net = nn.NeuralNet([5, 5, 1], 1, True, "test_name", 1, "test_project")
+    nn.save_meta_data(( ("test_param1", 100), ("test_param2", 101) ), [net])
+    del net
+    print("\n")
+
+
 if __name__ == "__main__":
     test_neuron_init()
     test_neuron_mutate()
@@ -111,5 +121,6 @@ if __name__ == "__main__":
     test_net_init()
     test_net_run()
     test_net_save()
-    test_net_read_network_no_file()
+    # test_net_read_network_no_file()
     test_net_read_network()
+    test_save_metadata()
