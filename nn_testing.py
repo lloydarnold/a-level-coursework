@@ -85,6 +85,24 @@ def test_net_save():
     del net
 
 
+def test_net_read_network_no_file():
+    print("Testing reading net from file (file doesn't exist)")
+    net = nn.NeuralNet([5, 5, 1], 1, True, "test_name_false", 1, "test_project")
+    print("network: " + str(net))
+    print("layer 1: " + str(net.layers[1]))
+    print("\n")
+    del net
+
+
+def test_net_read_network():
+    print("Testing reading net from file (file exists)")
+    net = nn.NeuralNet([5, 5, 1], 1, True, "test_name", 1, "test_project")
+    print("network: " + str(net))
+    print("layer 1: " + str(net.layers[1]))
+    print("\n")
+    del net
+
+
 if __name__ == "__main__":
     test_neuron_init()
     test_neuron_mutate()
@@ -93,3 +111,5 @@ if __name__ == "__main__":
     test_net_init()
     test_net_run()
     test_net_save()
+    test_net_read_network_no_file()
+    test_net_read_network()
