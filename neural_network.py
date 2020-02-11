@@ -153,6 +153,8 @@ class NeuralNet:
                 fLayer.write("\n\n")
             fLayer.close()
 
+        print("File succesfully made at: %s " % self.path)
+
         return 0
 
     def read_weights_from_file(self):
