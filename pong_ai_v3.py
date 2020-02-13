@@ -567,12 +567,5 @@ def main():
     print("process over")
 
 
-def test_update():
-    net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
-    inputArr, outputArr, expectedArr = read_record_data(1)
-    update_net_weightings(net, inputArr, expectedArr)
-
-
 if __name__ == "__main__":
     main()
-    # test_update()
