@@ -50,7 +50,7 @@ class Item:
         if canvas:
             self.canvas = canvas
         else:
-            print("no canvas passed in")
+            # print("no canvas passed in")
 
     def wipe(self, x, y):
         tempRect = (x, y, self.dimensions[0], self.dimensions[1])
@@ -390,7 +390,7 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
             network.feed_forward(x)
         val = network.rtn_rating()
         print(val)
-        
+
         # set to use hyperbolic tangent function. could use any other logistic sigmoidal
         # function with range -1, 1 inclusive. Values > 0.3 mean move up. Values < -0.3 mean move down
         # value x such that -0.3 < x < 0.3 will result in no move being made
