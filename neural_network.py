@@ -360,6 +360,7 @@ def save_meta_data(data_to_save=(("no data passed", 0)), networks=()):
     for pairing in data_to_save:
         fMeta.write("%s : %s" % (str(pairing[0]), str(pairing[1])))
 
+    print("meta file saved succesfully")
     fMeta.close()
     return
 
