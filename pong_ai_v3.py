@@ -49,7 +49,7 @@ class Item:
         self.movement = [delta_x, delta_y]
         if canvas:
             self.canvas = canvas
-        else:
+        # else:
             # print("no canvas passed in")
 
     def wipe(self, x, y):
@@ -478,7 +478,6 @@ def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=(
 
 
 def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
-    print("beginning random phase of training.")
 
     screen = init_screen()
 
@@ -489,7 +488,7 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
         run_game(screen, network, h)
 
         time.sleep(0.1)   # wait important to ensure that file is not read before it has been
-                    # in another thread.
+                          # written in another thread.
         inputArr, outputArr, expectedArr = read_record_data(h)
 
         for x in range(0, 50):
