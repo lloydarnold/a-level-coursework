@@ -223,7 +223,7 @@ class NeuralNet:
     def backwards(self, expected):
         numOfLayers = len(self.layers) - 1
         lastLayer = True
-        for i in range(numOfLayers, 0, -1):
+        for i in range(numOfLayers, -1, -1):
             layer = self.layers[i]      # N.B. In python, assignment operator assigns new label to same memory ref.
             errors = list()
             if lastLayer:
@@ -245,7 +245,7 @@ class NeuralNet:
     def backprop_layer_one(self, inputs, l_rate):
         """ This is necessary as in standard network topology, each neuron in L1 only receives one input"""
         for index, neuron in enumerate(self.layers[0]):
-            neuron.synaptic_weights[0] += l_rate * neuron.change * inputs[index]
+            neuron.synaptic_weights += l_rate * neuron.change * inputs[index]
 
     def update_weights_backprop(self, inputs, l_rate):
         for index, layer in enumerate(self.layers):
@@ -253,10 +253,6 @@ class NeuralNet:
                 inputs = [neuron.output for neuron in self.layers[index-1]]
                 for neuron in layer:
                     for i in range(len(neuron.synaptic_weights)):
-                        # print(i)
-                        # print(neuron.change)
-                        # print(inputs[i])
-                        # print(neuron.synaptic_weights)
                         neuron.synaptic_weights[i][0] += l_rate * neuron.change * inputs[i]
             else:
                 self.backprop_layer_one(inputs, l_rate)
