@@ -33,3 +33,4 @@ def test_run_game():
 if __name__ == "__main__":
     test_init_board()
     test_update()
+    test_run_game()
