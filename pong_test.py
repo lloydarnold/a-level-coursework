@@ -12,10 +12,16 @@ def test_init_board():
 def test_update():
     print("test update_net_weightings sub")
     net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, pong.PROJECT_NAME)
+    print("Weighting 2,0,0 before: %g " % net.layers[2][0].synaptic_weights[0])
     print("Weighting 1,0,0 before: %g " % net.layers[1][0].synaptic_weights[0])
+    print("Weighting 0,1,0 before: %g " % net.layers[0][1].synaptic_weights[0])
+
     inputArr, outputArr, expectedArr = pong.read_record_data(1)
     pong.update_net_weightings(net, inputArr, expectedArr)
+    print("Weighting 2,0,0 after: %g " % net.layers[2][0].synaptic_weights[0])
     print("Weighting 1,0,0 after: %g " % net.layers[1][0].synaptic_weights[0])
+    print("Weighting 0,1,0 after: %g " % net.layers[0][1].synaptic_weights[0])
+
     print("\n")
     del net
 
