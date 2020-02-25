@@ -303,8 +303,8 @@ def string_to_list(inputString = "", CInt=False):
 def read_record_data(epoch=None):
     if not epoch:
         print("No epoch passed to read_record_data")
-        return
-        
+        return None, None, None
+
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
 
     try:
