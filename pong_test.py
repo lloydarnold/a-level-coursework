@@ -9,6 +9,18 @@ def test_init_board():
     print("\n")
 
 
+def test_init_game_objects():
+    print("Test object creation and object draw methods")
+    screen = pong.init_screen()
+    ball, bat1, bat2 = pong.init_game_objects(screen)
+    print("Ball object : " + str(ball))
+    print("Bat object 1 : " + str(bat1))
+    print("Bat object 2 : " + str(bat2))
+    del ball
+    del bat1
+    del bat2
+
+
 def test_update():
     print("test update_net_weightings sub")
     net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, pong.PROJECT_NAME)
@@ -18,6 +30,7 @@ def test_update():
 
     inputArr, outputArr, expectedArr = pong.read_record_data(1)
     pong.update_net_weightings(net, inputArr, expectedArr)
+    print("\n")
     print("Weighting 2,0,0 after: %g " % net.layers[2][0].synaptic_weights[0])
     print("Weighting 1,0,0 after: %g " % net.layers[1][0].synaptic_weights[0])
     print("Weighting 0,1,0 after: %g " % net.layers[0][1].synaptic_weights[0])
@@ -38,5 +51,6 @@ def test_run_game():
 
 if __name__ == "__main__":
     test_init_board()
+    test_init_game_objects()
     test_update()
     test_run_game()
