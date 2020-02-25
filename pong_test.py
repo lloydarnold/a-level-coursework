@@ -60,6 +60,15 @@ def test_save_record_data():
     print("\n")
 
 
+def test_read_record_data():
+    print("testing read record data function")
+    inputArr, outputArr, expectedArr = pong.read_record_data(999)
+    print("File read succesfully, contents: \n")
+    for i, input in enumerate(inputArr):
+        print("Input: %g, Output: %g, Expected: %g " % (input, outputArr[i], expectedArr[i]))
+    print("\n")
+
+
 if __name__ == "__main__":
     test_init_board()
     test_init_game_objects()
@@ -67,3 +76,4 @@ if __name__ == "__main__":
     test_run_game()
     test_save_record_data()
     test_save_record_data()
+    test_read_record_data()
