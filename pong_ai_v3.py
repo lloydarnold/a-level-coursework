@@ -49,8 +49,8 @@ class Item:
         self.movement = [delta_x, delta_y]
         if canvas:
             self.canvas = canvas
-        else:
-            print("no canvas passed in")
+        # else:
+            # print("no canvas passed in")
 
     def wipe(self, x, y):
         tempRect = (x, y, self.dimensions[0], self.dimensions[1])
@@ -300,7 +300,11 @@ def string_to_list(inputString = "", CInt=False):
     return holdList
 
 
-def read_record_data(epoch):
+def read_record_data(epoch=None):
+    if not epoch:
+        print("No epoch passed to read_record_data")
+        return
+        
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
 
     try:
@@ -324,14 +328,21 @@ def read_record_data(epoch):
     return inputs, outputs, expected
 
 
-def save_record_data(data_to_save, epoch):
+def save_record_data(data_to_save=None, epoch=0):
+    if not data_to_save:
+        print("no data passed into save_record_data")
+        return
+
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
 
     try:
         os.makedirs(dataPath)
     except OSError:
         print("Error, file to be made already exists.")
-        override = get_value("Override? (Y/N)")
+        override = ""
+        while override != "Y" and override != "N":
+            override = get_value("Override? (Y/N)")
+
         if override.upper() == "N":
             print("File Preserved")
             return
@@ -389,6 +400,7 @@ def neural_net_move(network=nn.NeuralNet(), inputArray=None, bat=Bat(), ball=Bal
         for x in range(1, len(network.layers)):
             network.feed_forward(x)
         val = network.rtn_rating()
+        # print(val)
 
         # set to use hyperbolic tangent function. could use any other logistic sigmoidal
         # function with range -1, 1 inclusive. Values > 0.3 mean move up. Values < -0.3 mean move down
@@ -477,7 +489,6 @@ def update_net_weightings(netUpdate=nn.NeuralNet(), inputVals=(), expectedVals=(
 
 
 def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
-    print("beginning random phase of training.")
 
     screen = init_screen()
 
@@ -488,7 +499,7 @@ def train(network=nn.NeuralNet(), epochs=2, startEpoch=0):
         run_game(screen, network, h)
 
         time.sleep(0.1)   # wait important to ensure that file is not read before it has been
-                    # in another thread.
+                          # written in another thread.
         inputArr, outputArr, expectedArr = read_record_data(h)
 
         for x in range(0, 50):
@@ -512,7 +523,7 @@ def get_value(question):
         userInput = input(question + "  ")
         confirm = input("You have entered %s, is this correct? (Y/N)" % str(userInput))
         if confirm.upper() == "Y":
-            return userInput
+            return userInput.upper()
 
 
 def ask_load():
@@ -566,12 +577,5 @@ def main():
     print("process over")
 
 
-def test_update():
-    net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
-    inputArr, outputArr, expectedArr = read_record_data(1)
-    update_net_weightings(net, inputArr, expectedArr)
-
-
 if __name__ == "__main__":
     main()
-    # test_update()

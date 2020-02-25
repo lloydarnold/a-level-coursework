@@ -26,9 +26,8 @@ class Neuron:
 
     def think(self, neuron_input):
         self.output = self.activation(np.dot(neuron_input, self.synaptic_weights))
-        # if self.output[0].type
 
-    def loss(self, expected):
+    def calc_loss(self, expected):
         self.loss = self.loss_func(self.output, expected)
 
 
@@ -94,14 +93,14 @@ class NeuralNet:
             except:
                 print("unknown error thrown layer %s, sub init_layer" % layerName)
 
-    def run_first_layer(self, board):
+    def run_first_layer(self, inputs):
         """the first layer takes inputs in a different way to the other layers and thus requires a separate subroutine
         takes board as input. players squares should be represented as a one """
 
         count = 0
-        for row in board:
-            for square in row:
-                self.layers[0][count].think(square)     # done goofed here
+        for entry in inputs:
+            for value in entry:
+                self.layers[0][count].think(value)     # done goofed here
                 count += 1                              # when reading weights in from file, missing last ??
 
     def feed_forward(self, layerRef=1):
@@ -153,6 +152,8 @@ class NeuralNet:
                 fLayer.write(str(n.synaptic_weights))
                 fLayer.write("\n\n")
             fLayer.close()
+
+        print("File succesfully made at: %s " % self.path)
 
         return 0
 
@@ -218,16 +219,17 @@ class NeuralNet:
             os.makedirs(self.path)
         except OSError:
             print("Error, file already exists at path %s " %self.path)
-            
+
     def backwards(self, expected):
         numOfLayers = len(self.layers) - 1
         lastLayer = True
-        for i in range(numOfLayers, 0, -1):
+        for i in range(numOfLayers, -1, -1):
             layer = self.layers[i]      # N.B. In python, assignment operator assigns new label to same memory ref.
             errors = list()
             if lastLayer:
                 for neuron in layer:
-                    neuron.change = (expected - neuron.output) * tanh_derivative(neuron.output)
+                    neuron.calc_loss(expected)
+                    neuron.change = neuron.loss * tanh_derivative(neuron.output)
                 lastLayer = False
             else:
                 for j in range(len(layer)):
@@ -243,7 +245,7 @@ class NeuralNet:
     def backprop_layer_one(self, inputs, l_rate):
         """ This is necessary as in standard network topology, each neuron in L1 only receives one input"""
         for index, neuron in enumerate(self.layers[0]):
-            neuron.synaptic_weights[0] += l_rate * neuron.change * inputs[index]
+            neuron.synaptic_weights += l_rate * neuron.change * inputs[index]
 
     def update_weights_backprop(self, inputs, l_rate):
         for index, layer in enumerate(self.layers):
@@ -251,10 +253,6 @@ class NeuralNet:
                 inputs = [neuron.output for neuron in self.layers[index-1]]
                 for neuron in layer:
                     for i in range(len(neuron.synaptic_weights)):
-                        # print(i)
-                        # print(neuron.change)
-                        # print(inputs[i])
-                        # print(neuron.synaptic_weights)
                         neuron.synaptic_weights[i][0] += l_rate * neuron.change * inputs[i]
             else:
                 self.backprop_layer_one(inputs, l_rate)
@@ -332,6 +330,7 @@ def save_meta_data(data_to_save=(("no data passed", 0)), networks=()):
     :param data_to_save: Tuple of tuples, each containing parameter name / parameter
                          eg. ("max fitness", 100)
     :param networks: list or list-like object of instances of network class"""
+
     try:
         metaPath = networks[0].path.replace(networks[0].name, "meta.txt")
     except IndexError:
@@ -357,6 +356,7 @@ def save_meta_data(data_to_save=(("no data passed", 0)), networks=()):
     for pairing in data_to_save:
         fMeta.write("%s : %s" % (str(pairing[0]), str(pairing[1])))
 
+    print("meta file saved succesfully at path %s " % metaPath)
     fMeta.close()
     return
 
@@ -374,5 +374,4 @@ def eliminate_bottom_networks(networks):
 
 if __name__ == "__main__":
     # net = neural_net([64, 42, 1], False, "1564341349747", 2, "opti_reversi")
-    # test = "test"
     pass
