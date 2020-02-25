@@ -300,7 +300,11 @@ def string_to_list(inputString = "", CInt=False):
     return holdList
 
 
-def read_record_data(epoch):
+def read_record_data(epoch=None):
+    if not epoch:
+        print("No epoch passed to read_record_data")
+        return
+        
     dataPath = os.path.join(os.getcwd(), PROJECT_NAME, str(epoch))
 
     try:
