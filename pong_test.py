@@ -49,8 +49,21 @@ def test_run_game():
     print("gameplay successful")
 
 
+def test_save_record_data():
+    print("testing save record data function")
+    data = (([70, 70, 10, 180, 5, 5],-0.979104,1.000000),
+    ( [85, 85, 10, 200, 5, 5],-0.979104,1.000000),
+    ( [90, 90, 10, 220, 5, 5],-0.979104,1.000000),
+    ( [95, 95, 10, 240, 5, 5],-0.979104,1.000000))
+
+    pong.save_record_data(data, 999)
+    print("\n")
+
+
 if __name__ == "__main__":
     test_init_board()
     test_init_game_objects()
     test_update()
     test_run_game()
+    test_save_record_data()
+    test_save_record_data()
