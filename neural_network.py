@@ -21,6 +21,9 @@ class Neuron:
             self.synaptic_weights = weights
 
     def mutate(self):  # this function randomly changes the weightings on the neuron
+        if not isinstance(self.synaptic_weights, list):
+            self.synaptic_weights += 0.05 * (2 * np.random.random() - 1)
+            return
         for weight in self.synaptic_weights:
             weight += 0.05 * (2 * np.random.random() - 1)
 
@@ -63,6 +66,7 @@ class NeuralNet:
         self.fitness = 0
         self.path = ""
         self.projectName = projectName
+        print(self.name)
 
         count = -1
         for n in range(0, len(layerSizes)):
@@ -81,7 +85,12 @@ class NeuralNet:
         if not loadParams[0]:
             weights = [[-999] * numOfInputs] * (len(layer))
         else:
-            weights = self.read_weights_from_file()[loadParams[1]]
+            temp = self.read_weights_from_file()
+            if not temp:
+                print("no weights")
+                return
+            else:
+                weights = temp[loadParams[1]]
 
         for i in range(0, len(layer)):
             try:
@@ -100,8 +109,8 @@ class NeuralNet:
         count = 0
         for entry in inputs:
             for value in entry:
-                self.layers[0][count].think(value)     # done goofed here
-                count += 1                              # when reading weights in from file, missing last ??
+                self.layers[0][count].think(value)
+                count += 1
 
     def feed_forward(self, layerRef=1):
         """ takes reference of the layer to pass info from [reference being with indexing starting at 1,
@@ -162,16 +171,17 @@ class NeuralNet:
 
         self.path = os.path.join(os.getcwd(), self.projectName, "gen_" + str(self.generation), self.name)
 
-        weights = []
-
         try:
             fLayers = open(self.path + "/layers.txt", "r")
         except OSError:
             print("error. directory %s does not exist or cannot be accessed" % self.path)
+            weights = None
+
         else:
             numOfLayers = int(fLayers.read())
             fLayers.close()
 
+            weights = []
             tempNeuron = []
             tempLayer = []
 
@@ -189,6 +199,7 @@ class NeuralNet:
                 tempLayer = []
 
         finally:
+            # print(weights)
             return weights
 
     def mse_final_layer(self, expected):
