@@ -319,8 +319,6 @@ def read_record_data(epoch=None):
 
     for line in fData:
         temp = re.split("~", nn.strip_brackets_and_whitespace(line))
-        # print(temp)
-        # print(type(temp))
         inputs.append(string_to_list(temp[0]+",", True))
         outputs.append(float(temp[1]))
         expected.append(float(temp[2]))
@@ -339,6 +337,7 @@ def save_record_data(data_to_save=None, epoch=0):
         os.makedirs(dataPath)
     except OSError:
         print("Error, file to be made already exists.")
+
         override = ""
         while override != "Y" and override != "N":
             override = get_value("Override? (Y/N)")
