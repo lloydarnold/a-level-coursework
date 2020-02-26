@@ -3,6 +3,7 @@
 # 1 represents black pieces
 
 # error 22:02 21/01/2020 - neural_network.py; problem with statement weight += 0.05 * ... line 23
+# only occurs after loading from file - error in read_weights_from_file
 # float object not iterable
 # weights not of list like form ??
 # do an investigate
@@ -159,7 +160,7 @@ def rank_generation(networks):
     return networks
 
 
-def mergesort(arr, left=-11, right=-11):
+def mergesort(arr, left=None, right=None):
     """
     sorts generations by score
     :param arr: list of items to sort
@@ -167,17 +168,19 @@ def mergesort(arr, left=-11, right=-11):
     :param right: right pointer
     :return: networks: sorted list
     """
-    if right == -11:
+    if not right:
         right = len(arr) - 1
-    if left == -11:
+    if not left:
         left = 0
 
-    if right > left:
-
+    print("l: " + str(arr[left]))
+    print("r: " + str(arr[right]))
+    if right > left + 1:
+        print("left %g right %g" % (left, right))
         mid = int((left+right) / 2)
         arr1 = mergesort(arr, left, mid)
         arr2 = mergesort(arr, mid + 1, right)
-        merge_nets(arr1, arr2)
+        arr = merge_nets(arr1, arr2)
 
     return arr
 
@@ -190,29 +193,46 @@ def merge_nets(nets1, nets2):
     :return: merged array
     """
 
+    print("merging")
     len1 = len(nets1)
     len2 = len(nets2)
-    merged = []                                 # if it ain't broke, don't fix it.
+    merged = list()
     pointer1 = 0
     pointer2 = 0
 
+    print("nets1: " + str(nets1))
+    print("nets2: " + str(nets2))
+
     while pointer1 < len1 and pointer2 < len2:
-        hold1 = nets1[pointer1].fitness; hold2 = nets2[pointer2].fitness
-        merged.append(max(hold1, hold2))
+        hold1 = nets1[pointer1].fitness
+        hold2 = nets2[pointer2].fitness
         if hold1 > hold2:
+            merged.append(nets1[pointer1])
             pointer1+=1
         elif hold1 < hold2:
+            merged.append(nets2[pointer2])
             pointer2+=1
         elif hold1 == hold2:
-            merged.append(hold2)
+            merged.append(nets1[pointer1])
+            merged.append(nets2[pointer2])
             pointer1 +=1
             pointer2 += 1
 
-    if pointer1 < len1:
-        merged.append(nets1[pointer1:])
-    else:
-        merged.append(nets2[pointer2:])
+    # if pointer1 < len1:
+        # print("slice: " + str(nets1[pointer1:]))
+    #    merged.append(nets1[pointer1:-1])
+    #else:
+    #    merged.append(nets2[pointer2:-1)
 
+    if pointer1 < len1:
+        remaining = nets1[pointer1:]
+    else:
+        remaining = nets2[pointer2:]
+
+    for item in remaining:
+        merged.append(item)
+
+    print(merged)
     return merged
 
 
