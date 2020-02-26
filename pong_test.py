@@ -19,6 +19,8 @@ def test_init_game_objects():
     del ball
     del bat1
     del bat2
+    print("\n")
+
 
 
 def test_update():
@@ -31,9 +33,15 @@ def test_update():
     inputArr, outputArr, expectedArr = pong.read_record_data(1)
     pong.update_net_weightings(net, inputArr, expectedArr)
     print("\n")
-    print("Weighting 2,0,0 after: %g " % net.layers[2][0].synaptic_weights[0])
-    print("Weighting 1,0,0 after: %g " % net.layers[1][0].synaptic_weights[0])
-    print("Weighting 0,1,0 after: %g " % net.layers[0][1].synaptic_weights[0])
+    print("Weighting 2,0,0 after 1: %g " % net.layers[2][0].synaptic_weights[0])
+    print("Weighting 1,0,0 after 1: %g " % net.layers[1][0].synaptic_weights[0])
+    print("Weighting 0,1,0 after 1: %g " % net.layers[0][1].synaptic_weights[0])
+
+    pong.update_net_weightings(net, inputArr, expectedArr)
+    print("\n")
+    print("Weighting 2,0,0 after 2: %g " % net.layers[2][0].synaptic_weights[0])
+    print("Weighting 1,0,0 after 2: %g " % net.layers[1][0].synaptic_weights[0])
+    print("Weighting 0,1,0 after 2: %g " % net.layers[0][1].synaptic_weights[0])
 
     print("\n")
     del net
@@ -47,6 +55,7 @@ def test_run_game():
     del screen
     del net
     print("gameplay successful")
+    print("\n")
 
 
 def test_save_record_data():
@@ -60,20 +69,26 @@ def test_save_record_data():
     print("\n")
 
 
+def test_read_record_data_invalid():
+    print("testing read record data function - no epoch")
+    inputArr, outputArr, expectedArr = pong.read_record_data()
+    print("\n")
+
 def test_read_record_data():
     print("testing read record data function")
     inputArr, outputArr, expectedArr = pong.read_record_data(999)
     print("File read succesfully, contents: \n")
     for i, input in enumerate(inputArr):
-        print("Input: %g, Output: %g, Expected: %g " % (input, outputArr[i], expectedArr[i]))
+        print("Input: %s, Output: %s, Expected: %s " % (str(input), str(outputArr[i]), str(expectedArr[i])))
     print("\n")
 
 
 if __name__ == "__main__":
     test_init_board()
     test_init_game_objects()
-    test_update()
-    test_run_game()
+    # test_update()
+    # test_run_game()
     test_save_record_data()
     test_save_record_data()
+    test_read_record_data_invalid()
     test_read_record_data()
