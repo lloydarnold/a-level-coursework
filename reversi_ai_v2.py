@@ -234,7 +234,7 @@ def save_generation(networks):
 
 
 def eval_move_with_neural_net(modelBoard=(()), moves=(), turn=1,
-                              network=NN.NeuralNet([64, 42, 1], 1, False, "network_one", PROJECT_NAME)):
+                              network=NN.NeuralNet()):
     """ Evaluates a move using neural network and returns the 'best', according to the network
        Takes input of board (as nested list of tile objects, moves (nested list, consisting of move, direction vectors
         and blank value of rating) and turn as integer = 1 or = -1)

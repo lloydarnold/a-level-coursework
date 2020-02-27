@@ -21,8 +21,11 @@ class Neuron:
             self.synaptic_weights = weights
 
     def mutate(self):  # this function randomly changes the weightings on the neuron
+        # if not isinstance(self.synaptic_weights, list):
+        #    self.synaptic_weights += 0.05 * (2 * np.random.random() - 1)
+        #    return
         for weight in self.synaptic_weights:
-            weight += 0.05 * (2 * np.random.random() - 1)
+            weight[0] += 0.05 * (2 * np.random.random() - 1)
 
     def think(self, neuron_input):
         self.output = self.activation(np.dot(neuron_input, self.synaptic_weights))
@@ -59,7 +62,7 @@ class NeuralNet:
         :param firstLayerInput: Integer representing number of inputs PER NEURON in first layer"""
         self.name = name or str(int(round(time.time() * 1000)))
         self.layers = []
-        self.generation = generation
+        self.generation = int(generation)
         self.fitness = 0
         self.path = ""
         self.projectName = projectName
@@ -81,7 +84,12 @@ class NeuralNet:
         if not loadParams[0]:
             weights = [[-999] * numOfInputs] * (len(layer))
         else:
-            weights = self.read_weights_from_file()[loadParams[1]]
+            temp = self.read_weights_from_file()
+            if not temp:
+                print("no weights")
+                return
+            else:
+                weights = temp[loadParams[1]]
 
         for i in range(0, len(layer)):
             try:
@@ -271,10 +279,9 @@ def rank_generation(networks):
     """ sort list of generations by score. currently uses bubble so change this
     :param networks: as list of network objects
     :return networks: as sorted list"""
-    try:
-        hold = networks[0]
-    except IndexError:
-        print("rank_generation failed as ")
+    if not isinstance(networks, list):
+        print("rank_generation failed as networks not list")
+        return networks
 
     inOrder = False
     n = len(networks) - 1
