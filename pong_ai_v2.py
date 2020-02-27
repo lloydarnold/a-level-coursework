@@ -4,6 +4,7 @@ import time
 import threading
 import os
 import neural_network as nn
+import random
 from pygame.locals import *
 
 # COLOURS ##
@@ -87,6 +88,7 @@ class Ball(Item):
             return "must set exactly 1 of changeX, changeY to True"
 
         self.movement[direction] *= -1
+        self.movement[1] += random.randint(-2, 2)
         # self.movement[direction] += random.randint(-8, 8)
 
         if changeY:
@@ -289,7 +291,7 @@ def fitness_func(canvas, netToTest):
     neural_net_thread.start()               # Thread.run() moves main thread, Thread.start() initiates new
 
     bounces = 0
-    play_count = 500
+    play_count = 1000
 
     while play_count > 0:
         time.sleep(0.01)
@@ -336,7 +338,7 @@ def train(networks=(), gens=2, startGen=0):
     prevGenTopFitness = 0
     canvas = init_screen()
 
-    for h in range(1, 10):
+    for h in range(1, gens):
 
         genTopFitness = -999
         genBottomFitness = 999

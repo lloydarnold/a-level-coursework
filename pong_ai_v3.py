@@ -89,7 +89,7 @@ class Ball(Item):
             return "must set exactly 1 of changeX, changeY to True"
 
         self.movement[direction] *= -1
-        self.movement[1] += random.randint(-4,4)
+        self.movement[1] += random.randint(-2, 2)
         # self.movement[direction] += random.randint(-8, 8)
 
         if changeY:
@@ -448,10 +448,10 @@ def run_game(canvas=None, netToTest=nn.NeuralNet(), epoch=0):
     comp_control_thread.start()             # N.B. Thread.start() instead of Thread.run()
     neural_net_thread.start()               # Thread.run() moves main thread, Thread.start() initiates new
 
-    play_count = 300
+    play_count = 2000
 
     while play_count > 0:
-        time.sleep(0.01)
+        time.sleep(0.03)
         play_count -= 1
 
         for event in pygame.event.get():
@@ -554,7 +554,7 @@ def load():
 
         for x in directories:
             # print(x[-13:])
-            network = nn.NeuralNet((6, 40, 20, 1), 1, True, x[-13:], genReached, PROJECT_NAME)
+            network = nn.NeuralNet((6, 40, 20, 1), 1, True, x[-16:], genReached, PROJECT_NAME)
             netsFound.append(network)
 
         return netsFound, genReached
@@ -566,7 +566,8 @@ def main():
     numOfEpochs = get_value("How many epochs? ")
 
     if ask_load():
-        net, startEpoch = load()
+        netHold, startEpoch = load()
+        net = netHold[0]
     else:
         net = nn.NeuralNet((6, 40, 20, 1), 1, False, "grad_descent_net", 0, PROJECT_NAME)
         startEpoch = 0.0
