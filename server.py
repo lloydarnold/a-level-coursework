@@ -10,7 +10,7 @@ sys_id_lookup = {"sample_system": 0}
 
 def send_and_print(message, comSocket):
    """
-   :param message: string to both print to screen and yeet over a socket
+   :param message: string to both print to screen and send over a socket
    :param comSocket: socket for yeeting message down
    :return: 1 if execute correctly
    """
