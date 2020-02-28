@@ -132,17 +132,6 @@ def init_board():
 
 
 ###########################################################################################################################################################
-
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-def print_board_colours(board):
-    """ print colours of tiles on board. For testing only. """
-    print("\n\n")
-    for row in board:
-        for square in row:
-            print(str(square.colour).ljust(17), end='')
-        print('\n')
-
-
 # checks along one line to see if any counters would switch ------------------------------------------------------------------------------------------------
 def check_line(delta_x, delta_y, grid, row, column, turn):
     if turn == -1:
