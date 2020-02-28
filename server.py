@@ -111,12 +111,14 @@ def get_handler(type=None, conn=None):
 
    type = str(type)
 
-   if type == "sysids":
+   if type == "sysids\n":
        send_sys_ids(conn)
-   if type == "data":
+   if type == "data\n":
        send_sys_data(conn)
    else:
        #print(type)
+       #print(type == "sysids\n")
+       #print(type == "data")
        #print(isinstance(type, str))
        send_and_print("2 - illegal connection type", conn)
        conn.close()
