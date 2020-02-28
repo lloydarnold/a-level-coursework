@@ -99,29 +99,30 @@ def handler(conn):
    return 0
 
 
-def get_handler(type="test", conn=None):
+def get_handler(type=None, conn=None):
    """
    :param type: the type of get request. Split off of initial request using REGEX
    :param conn: same as before; socket
    :return: 1 if execute successfully
    """
 
-   if not conn:
+   if not conn and type:
        return
 
-   send_and_print("1" + type + "\n", conn)
-   print("2" + type + "\n")
+   type = str(type)
 
-   if type == "sysid":
+   if type == "sysids":
        send_sys_ids(conn)
    if type == "data":
        send_sys_data(conn)
    else:
+       #print(type)
+       #print(isinstance(type, str))
        send_and_print("2 - illegal connection type", conn)
        conn.close()
-       return 0
+       return None
 
-   return 1
+   return None
 
 
 def send_sys_ids(conn=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)):
@@ -190,7 +191,8 @@ def get_json(message="", comSocket=socket.socket(socket.AF_INET, socket.SOCK_DGR
    except StopIteration as err:
        comSocket.send("Station took too long to reply \n".encode())
        print("file received not JSON")
-       return -1
+       return None
+
    return json_data
 
 
@@ -201,7 +203,11 @@ def recv_data(conn):
    :return: 1 if executes successfully
    """
 
-   json_data = get_json("send JSON of sys_data", conn)
+   json_data = get_json("send JSON of sys_data \n", conn)
+   if not json_data:
+       print("No data sent. ")
+       return
+
    try:
        new_data = json.loads(json_data)
    except ValueError:
