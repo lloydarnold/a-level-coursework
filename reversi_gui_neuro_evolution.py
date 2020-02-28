@@ -3,7 +3,7 @@
 import pygame, sys, time, random, copy, os
 from pygame.locals import *
 
-import neural_net_v2 as NN
+import neural_net_v2 as nn
 
 PROJECTNAME = "Othello"
 
@@ -43,10 +43,10 @@ def show_scores(pieces):
     pygame.display.update()
 
 
-def GUI_draw_grid():
+def GUI_draw_grid(canvas=gameSurface):
     for x in range(0, 9):
-        pygame.draw.rect(gameSurface, GREEN, (16, (16 + 62 * x), 497, 2))
-        pygame.draw.rect(gameSurface, GREEN, ((16 + 62 * x), 16, 2, 497))
+        pygame.draw.rect(canvas, GREEN, (16, (16 + 62 * x), 497, 2))
+        pygame.draw.rect(canvas, GREEN, ((16 + 62 * x), 16, 2, 497))
         pygame.display.update()
 
 
@@ -61,23 +61,23 @@ class tile():  # every gamepiece is treated as an object. draw draws it to scree
         self.x = 47 + 62 * x;
         self.y = 47 + 62 * y
 
-    def draw(self):
-        pygame.draw.circle(gameSurface, self.colour, (self.x, self.y), 26)
-        pygame.draw.circle(gameSurface, self.oppcolour, (self.x, self.y), 28, 2)
+    def draw(self, canvas=gameSurface):
+        pygame.draw.circle(canvas, self.colour, (self.x, self.y), 26)
+        pygame.draw.circle(canvas, self.oppcolour, (self.x, self.y), 28, 2)
         pygame.display.update()
 
-    def flip(self):
+    def flip(self, canvas=gameSurface):
         temp = self.colour;
         self.colour = self.oppcolour;
         self.oppcolour = temp
-        self.draw()
+        self.draw(canvas)
 
-    def show_ghost(self):
-        pygame.draw.rect(gameSurface, SHADOW, (self.x - 10, self.y - 10, 20, 20))
+    def show_ghost(self, canvas=gameSurface):
+        pygame.draw.rect(canvas, SHADOW, (self.x - 10, self.y - 10, 20, 20))
         pygame.display.update((self.x - 10, self.y - 10, 20, 20))
 
-    def hide_ghost(self):
-        pygame.draw.rect(gameSurface, LIGHTGREEN, (self.x - 10, self.y - 10, 20, 20))
+    def hide_ghost(self, canvas=gameSurface):
+        pygame.draw.rect(canvas, LIGHTGREEN, (self.x - 10, self.y - 10, 20, 20))
         pygame.display.update((self.x - 10, self.y - 10, 20, 20))
 
 
@@ -110,38 +110,28 @@ def define_tileGrid(tiles):
     ]
 
 
-def reset_board(tiles):
+def reset_board(tiles=(), canvas=gameSurface):
     """ This subroutine resets the tile grid """
 
     for tileRef in tiles:
-        if tileRef != "": pygame.draw.circle(gameSurface, LIGHTGREEN, (tileRef.x, tileRef.y), 29)
+        if tileRef != "": pygame.draw.circle(canvas, LIGHTGREEN, (tileRef.x, tileRef.y), 29)
     return 0
 
 
-def init_board():
+def init_board(canvas=gameSurface):
     """ initialises drawing of board and tileGrid. returns tileGrid"""
-    GUI_draw_grid()
+    GUI_draw_grid(canvas)
     tiles = define_tiles()
     tileGrid = define_tileGrid(tiles)
-    reset_board(tiles)
-    tiles[28].draw();
-    tiles[29].draw();
-    tiles[36].draw();
-    tiles[37].draw()
+    reset_board(tiles, canvas)
+    tiles[28].draw(canvas)
+    tiles[29].draw(canvas);
+    tiles[36].draw(canvas);
+    tiles[37].draw(canvas)
     return tileGrid
 
 
 ###########################################################################################################################################################
-
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-def print_board_colours(board):
-    """ print colours of tiles on board. For testing only. """
-    print("\n\n")
-    for row in board:
-        for square in row:
-            print(str(square.colour).ljust(17), end='')
-        print('\n')
-
 
 # checks along one line to see if any counters would switch ------------------------------------------------------------------------------------------------
 def check_line(delta_x, delta_y, grid, row, column, turn):
@@ -385,14 +375,14 @@ def prep_board(board, pColour, oppColour):
 
 
 def eval_move_with_neural_net(modelBoard=[[]], moves=[], turn=1,
-                              network=NN.neural_net([64, 42, 1], [[[[1]] * 64], [[[-999]] * 42], [[[-999]] * 1]],
+                              network=nn.neural_net([64, 42, 1], [[[[1]] * 64], [[[-999]] * 42], [[[-999]] * 1]],
                                                     "network_one")):
     """ Evaluates a move using neural network and returns the 'best', according to the network
         Takes input of board (as nested list of tile objects, moves (nested list, consisting of move, direction vectors and blank value of rating) and turn as integer = 1 or = -1)"""
-    # network = NN.neural_net([64, 42, 1], [ [ [[1]] * 64 ], [ [[-999]] * 42 ], [ [[-999]] * 1 ] ], "network_one")
+    # network = nn.neural_net([64, 42, 1], [ [ [[1]] * 64 ], [ [[-999]] * 42 ], [ [[-999]] * 1 ] ], "network_one")
 
     # network.save_network()
-    # weights = NN.read_weights_from_file("network_one.txt")
+    # weights = nn.read_weights_from_file("network_one.txt")
 
     if turn == 1:
         pColour = BLACK; oppColour = WHITE
@@ -426,8 +416,8 @@ def eval_move_with_neural_net(modelBoard=[[]], moves=[], turn=1,
 def computer_move(board, turn, playerType, neuralNet=-999):
     """ Gets computer move.
     board as list of lists (2d array), turn as integer = 1 or = -1, playerType as integer
-    type 1 refers to NN, 2 to random mover, 3 to slightly bias greedy mover, 4 to minimax
-    if playerType = 1 and a specific NN is desired, pass this as a parameter. Else, leave blank.
+    type 1 refers to nn, 2 to random mover, 3 to slightly bias greedy mover, 4 to minimax
+    if playerType = 1 and a specific nn is desired, pass this as a parameter. Else, leave blank.
     """
 
     if playerType == 1:
@@ -468,7 +458,7 @@ def init_networks(sizeOfGen=4):
     networks = []
     for i in range(0, sizeOfGen):
         networks.append(
-            NN.neural_net([64, 42, 1], [[[[1]] * 64], [[[-999]] * 42], [[[-999]] * 1]], "network_{}".format(i), 1))
+            nn.neural_net([64, 42, 1], [[[[1]] * 64], [[[-999]] * 42], [[[-999]] * 1]], "network_{}".format(i), 1))
     return networks
 
 
@@ -604,9 +594,7 @@ def comp_play(player1, player2, randomMover):
     return 0
 
 
-# main--------------------------------------------------------------------------------------------------------------------------------------------------------
-if __name__ == "__main__":
-
+def main():
     training(20)
 
     # GUI_draw_grid()
@@ -646,3 +634,16 @@ if __name__ == "__main__":
         print("draw")
     else:
         print("Black wins")
+
+
+def test_init_board():
+    print("testing init board subroutine from graphical reversi")
+    init_board()
+    time.sleep(200)
+    print("\n")
+
+
+# main--------------------------------------------------------------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    # test_init_board()
+    main()
