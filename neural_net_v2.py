@@ -22,7 +22,7 @@ class neuron():
 
    # alternative way of thinking that stores output as object property:
     def think(self, input):
-        self.output = self.activation(np.dot(input, self.synaptic_weights))[0]          #this was a quick fix, might wanna check it or something 
+        self.output = self.activation(np.dot(input, self.synaptic_weights))[0]          #this was a quick fix, might wanna check it or something
         true = True
 
 #activation function being used ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ class neural_net():
     """ This class constitutes multi layer neural network, with variable layer sizes. This translates into one input layer, one output layer and n hidden layers
         Requires inputs of matrix of layer sizes, form [n, m, o etc] where sum m,n,o = num of layers and m, n and o are respective layer sizes.
         Then, weights for each if known , the name of the net and the generation number.
-        
+
         Passing -999 * layersize will generate weights randomly."""
 
     def __init__(self, layers = [], weights = [[],[],[]], name = "name", generation = 0):
@@ -53,7 +53,7 @@ class neural_net():
             self.layers.append([""] * layers[n])
             if n == 0 : numOfInputs = layers[0]
             else : numOfInputs = layers[n - 1]
-            self.init_layer(self.layers[n], weights[n], numOfInputs) 
+            self.init_layer(self.layers[n], weights[n], numOfInputs)
 
     def init_layer(self, layer, weights, numOfInputs):                  #numOfInputs is num PER NEURON not total for layer
         if weights == []:
@@ -61,11 +61,11 @@ class neural_net():
         for i in range(0, len(layer)):                                  # <-----------------------------------------
             layer[i]  = neuron(numOfInputs, weights[0][i])              # <-----------------------------------------
 
-    def run_first_layer(self, board):           
-        """the first layer takes inputs in a different way to the other layers and thus requires a seperate subroutine 
+    def run_first_layer(self, board):
+        """the first layer takes inputs in a different way to the other layers and thus requires a seperate subroutine
         takes board as input. players squares should be represented as a one """
 
-        output = [] ; count = 0                              
+        output = [] ; count = 0
         for row in board:
             for square in row:
                 self.layers[0][count].think(square)
@@ -75,7 +75,7 @@ class neural_net():
         """ takes reference of the layer to pass info from [reference being with indexing starting at 1, so to pass info from first layer to second, layerRef = 1 etc]"""
         inputs = []
         for source in self.layers[layerRef - 1]:
-            inputs.append(source.output)          
+            inputs.append(source.output)
         for target in self.layers[layerRef]:
             target.think(inputs)
 
@@ -92,7 +92,7 @@ class neural_net():
 
     def save_network(self):
         """ saves network into directory set """
-        
+
         fLayers = open(self.path + "/layers.txt", "w")
         fLayers.write(str(len(self.layers)))
         fLayers.close()
@@ -109,19 +109,19 @@ class neural_net():
 
 ##    def read_weights_from_file(self, projectName):
 ##        """ reads weights from file, needs projectName parameter. rest of file path is derived from self data."""
-##       
+##
 ##        f = open(self.path + "/%s.txt" %self.name, "r")
 ##        weights = [] ; tempWeights = []
 ##
 ##        count = 0 ; target = 0
 ##        for line in f:
 ##           weights.append(line)
-            
+
 ##        return weights
 
     def read_weights_from_file(self, projectName):
         """ reads weights from file, needs projectName parameter. rest of file path is derived from self data."""
-       
+
         fLayers = open(self.path + "/layers.txt", "r")
         numOfLayers = int(fLayers.read())
         fLayers.close()
@@ -135,7 +135,7 @@ class neural_net():
                 if line != "\n":
                     tempNeuron.append(float(strip_brackets_and_whitespace(line)))
                 else: tempLayer.append(tempNeuron) ; tempNeuron = []
-            
+
             weights.append(tempLayer)
             tempLayer = []
 
@@ -145,10 +145,10 @@ class neural_net():
         """ Makes new directory for Network.
         Takes path of file to save relative to, name of project, generation reference string, """
 
-        self.path = os.path.join(os.getcwd(), projectName, "gen_" + str(self.generation), self.name)                
-        pathlib.Path(self.path).mkdir(parents = True, exist_ok = True) 
+        self.path = os.path.join(os.getcwd(), projectName, "gen_" + str(self.generation), self.name)
+        pathlib.Path(self.path).mkdir(parents = True, exist_ok = True)
 
-######################################################################################################################################### 
+#########################################################################################################################################
 
 def strip_brackets_and_whitespace(input):
     return input.rstrip().replace('[','').replace(']','')
