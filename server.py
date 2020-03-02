@@ -11,12 +11,13 @@ sys_id_lookup = {"sample_system": 0}
 def send_and_print(message, comSocket):
    """
    :param message: string to both print to screen and send over a socket
-   :param comSocket: socket for yeeting message down
+   :param comSocket: socket for sending message down
    :return: 1 if execute correctly
    """
    print(message)
-   message = message+"\n"
-   comSocket.send(message.encode())
+   message = message
+   messageToSend = message.encode()
+   comSocket.send(messageToSend)
    return 1
 
 
@@ -113,13 +114,9 @@ def get_handler(type=None, conn=None):
 
    if type == "sysids\n":
        send_sys_ids(conn)
-   if type == "data\n":
+   elif type == "data\n":
        send_sys_data(conn)
    else:
-       #print(type)
-       #print(type == "sysids\n")
-       #print(type == "data")
-       #print(isinstance(type, str))
        send_and_print("2 - illegal connection type", conn)
        conn.close()
        return None
@@ -129,7 +126,7 @@ def get_handler(type=None, conn=None):
 
 def send_sys_ids(conn=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)):
    """
-   sends JSON list of all sys_ids currently stored on server
+   sends JSON-like list of all sys_ids currently stored on server
    :param conn: socket connection
    :return: 1 if executes successfully
    """
@@ -140,6 +137,7 @@ def send_sys_ids(conn=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)):
 
    data = json.dumps(sys_ids)
    conn.send(data)
+   conn.send("\n")
    conn.close()
 
 
