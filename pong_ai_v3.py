@@ -522,7 +522,7 @@ def get_value(question):
         userInput = input(question + "  ")
         confirm = input("You have entered %s, is this correct? (Y/N)" % str(userInput))
         if confirm.upper() == "Y":
-            return userInput.upper()
+            return userInput
 
 
 def ask_load():
