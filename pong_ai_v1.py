@@ -48,8 +48,9 @@ class Item:
         if canvas:
             self.canvas = canvas
         else:
-            print("no canvas passed in")
-
+            #print("no canvas passed in")
+            pass
+            
     def wipe(self, x, y):
         tempRect = (x, y, self.dimensions[0], self.dimensions[1])
         pygame.draw.rect(self.canvas, BLACK, tempRect)
