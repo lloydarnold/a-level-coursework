@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# folders
+/opti_reversi2/
+/test_project/
