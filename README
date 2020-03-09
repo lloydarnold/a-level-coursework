@@ -52,4 +52,34 @@ neural_network.py:
     Network objects can be defined with parameter for dimensions (code can handle n layers of m1, m2, .. , mn sizes),
     boolean for if weights are known, name as string, generation as integer, project name as string.
 
-    dependencies: NumPy, os and pygame
+    dependencies: NumPy, os, time, copy
+
+
+neural_net_v2.py:
+    legacy version of neural network. Compatible with reversi_gui (as i haven't rewritten this lmao)
+
+    dependencies: numpy, pathlib, os, time
+
+
+*_testing.py / *_test.py:
+    various test scripts. These were written to test functionality of various other aspects of project
+
+    dependencies: NN, <file to be tested>, random, numpy
+
+
+server.py:
+    code for server to collate and manage data from training
+
+    dependencies: socket, threading, JSON, re
+
+
+draw_graph.py:
+    script to draw graphs of data from meta.txt files
+
+    dependencies: sys, os, numpy, re, matplotlib
+
+
+reversi_gui_*.py:
+    series of reversi implementations that include graphical front extended
+
+    dependencies: pygame, sys, time, random, copy, os, neural_net_v2
