@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import sys
 import numpy as np
 import os
+import re
 
 PROJECT_NAME = "test_project"
 
@@ -33,12 +34,36 @@ def get_meta(directories=None):
         fMeta.close()
     return rawMeta
 
+
+def format_data(data=None):
+    print(data)
+    print(re.split("\d\d+[a-zA-Z]", strip_brackets_and_whitespace(data)))
+    return re.split("\d\d+[a-zA-Z]", strip_brackets_and_whitespace(data))
+
+
+def strip_brackets_and_whitespace(input):
+    return input.rstrip().replace('[', '').replace(']', '')
+
+
+def format_meta(raw=None):
+    meta = []
+    print(raw)
+    for genMeta in raw:
+        meta.append(format_data(str(genMeta)))
+    return meta
+
+
 def get_x():
     dirs = find_dirs()
-    get_meta(dirs)
+    meta = get_meta(dirs)
+    print(meta)
+    meta = format_meta(meta)
+    print(meta)
+
 
 def get_y():
     pass
+
 
 def main():
     get_x()
