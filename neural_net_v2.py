@@ -1,5 +1,7 @@
 import numpy as np
-import pathlib, os, time
+import pathlib
+import os
+import time
 
 class neuron():
 
