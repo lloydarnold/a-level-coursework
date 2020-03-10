@@ -380,5 +380,5 @@ def eliminate_bottom_networks(networks):
 
 
 if __name__ == "__main__":
-    # net = neural_net([64, 42, 1], False, "1564341349747", 2, "opti_reversi")
-    pass
+    print("Error - library. Please import into project. Find documentation at:")
+    print("https://github.com/lloydarnold/a-level-coursework")

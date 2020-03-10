@@ -154,3 +154,8 @@ class neural_net():
 
 def strip_brackets_and_whitespace(input):
     return input.rstrip().replace('[','').replace(']','')
+
+
+if __name__ == "__main__":
+    print("Error - library. Please import into project. Find documentation at:")
+    print("https://github.com/lloydarnold/a-level-coursework")
