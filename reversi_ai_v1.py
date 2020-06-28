@@ -120,7 +120,7 @@ def legal_moves(board, turn):
     for y in range(0, 8):
         for x in range(0, 8):
             directions = []
-            if check_legal(board, y + 1, x + 1, turn, directions) == True:
+            if check_legal(board, y + 1, x + 1, turn, directions) is True:
                 moves.append([[y, x], directions, 0])
 
     return moves  # structure moves : [[move, directions, rating], [move, directions, rating], etc]
