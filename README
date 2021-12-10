@@ -1,9 +1,5 @@
-If it ain't broke, don't fix it.
-
-
 reversi_ai_v1/v2.py:
-    Code for training neural networks to play game Reversi. Has lots of neat features.
-    Bells and Whistles included as stock.
+    Code for training neural networks to play game Reversi.
 
     Difference between 1 and 2 is slight disparity on dependencies and functionality is extended in v2.
     v1 is still included to aid understanding of system development but not significant in it's own right
